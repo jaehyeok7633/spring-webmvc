@@ -43,10 +43,10 @@
 
 </head>
 <body>
-
+    
     <div class="wrap">
         <h1>커피 주문서</h1>
-
+    
         <div class="menu">
             <form action="/coffee/result" method="post">
                 <label>
@@ -58,18 +58,18 @@
                     </select>
                 </label>
                 <label class="price"># 가격: <span class="price-value">3000</span>원</label>
-
+    
                 <!-- 화면에 렌더링은 안되지만 서버로 보낼 수 있음 -->
                 <input id="price-tag" type="hidden" name="price">
-
-
+    
+    
                 <label>
                     <button type="submit">주문하기</button>
                 </label>
             </form>
-
-
-
+    
+    
+    
         </div>
     </div>
 
@@ -81,7 +81,7 @@
             macchiato: 5000
         };
 
-        const $menu = document.getElementById('menu-sel');
+        const $menu = document.getElementById('menu=sel');
 
         // change: input이나 select 태그의 값이 변했을 때
         $menu.onchange = e => {
@@ -89,16 +89,14 @@
             // console.log(e.target.value); -> option의 value가 잘 오고 있다!
 
             const price = coffeePrice[e.target.value]; // 객체에서 선택된 커피의 가격을 얻어옴.
-
             // span태그에 사용자가 선택한 커피의 가격을 화면으로 노출.
             document.querySelector('.price-value').textContent = price;
-            // input hidden 태그에 가격을 넣어놓기 -> form을 이용해서 서버로 전달.
-            document.getElementById('price-tag').value = price;
-
+            // input.hidden 태그에 가격을 넣어놓기 -> form을 이용해서 서버로 전달.
+            document.getElementById('price-tag').valye = price;
+            
         }
 
     </script>
-
 
 </body>
 </html>
