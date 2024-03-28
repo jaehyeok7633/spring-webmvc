@@ -57,9 +57,9 @@
 
     <!-- 메인 게시판 영역 -->
     <div class="card-container">
-        <c: forEach var="b" items="${bList}">
+        <c:forEach var="b" items="${bList}">
             <div class="card-wrapper">
-                <section class="card" data-bno="#">
+                <section class="card" data-bno="${b.boardNo}">
                     <div class="card-title-wrapper">
                         <h2 class="card-title">${b.shortTitle}</h2>
                         <div class="time-view-wrapper">
@@ -86,8 +86,7 @@
                 </div>
 
             </div>
-        </c: forEach>
-
+        </c:forEach>
     </div>
 
     <!-- 게시글 목록 하단 영역 -->
@@ -142,6 +141,18 @@
 
 <script>
 
+    // 카드 형태의 게시물들을 감싸고 있는 부모 요소 취득
+    const $cardContainer = document.querySelector('.card-container');
+
+    $cardContainer.addEventListener('click', e => {
+        if (e.target.matches('.card-wrapper')) return; 
+
+        // section태그에 붙은 글 번호를 읽어오자
+        // 이벤트가 발생한 타겟에서 가장 가까운 section.card.를 지목해서 data-bno를 얻어오기.
+        const bno = e.target.closest('section.card').dataset.bno;
+        console.log('bno: ' + bno);
+        
+    });
 
   //========== 게시물 목록 스크립트 ============//
 
