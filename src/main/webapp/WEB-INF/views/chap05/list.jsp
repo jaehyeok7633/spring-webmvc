@@ -100,19 +100,24 @@
                                              href="#">&lt;&lt;</a>
                     </li>
 
+                <c:if test="${maker.prev}">
                     <li class="page-item"><a class="page-link"
-                                             href="#">prev</a>
+                                             href="/board/list?pageNo=${maker.begin - 1}">prev</a>
                     </li>
+                </c:if>
 
-                    <li data-page-num="" class="page-item">
+                <c:forEach var="i" begin="${maker.begin}" end="${maker.end}">
+                    <li data-page-num="${i}" class="page-item">
                         <a class="page-link"
-                           href="#">${i}</a>
+                           href="/board/list?pageNo=${i}">${i}</a>
                     </li>
+                </c:forEach>
 
-
+                <c:if test="${maker.next}">
                     <li class="page-item"><a class="page-link"
-                                             href="#">next</a>
+                                             href="/board/list?pageNo=${maker.end + 1}">next</a>
                     </li>
+                </c:if>
 
                     <li class="page-item"><a class="page-link"
                                              href="#">&gt;&gt;</a>
@@ -154,9 +159,11 @@
         console.log('이벤트 타겟: ', e.target);
         if (e.target.matches('.card-container')) return;
 
+        // 삭제 버튼을 눌렀다면~
         if (e.target.matches('.card-btn-group *')) {
             console.log('삭제 버튼 클릭됨!');
             $modal.style.display = 'flex'; // 숨겨진 모달창을 드러내기.
+
 
             // 이벤트가 발생한 타겟에서 가장 가까운 .del-btn이 가지고 있는 data-href를 얻는다.
             const deleteLocation = e.target.closest('.del-btn').dataset.href;
@@ -164,7 +171,6 @@
             // 확인 버튼 이벤트
             $confirmDelete.onclick = e => {
                 // 삭제 요청을 서버에 보내야 한다.
-                
                 location.href = deleteLocation;
 
                 // 모달창을 닫아야 한다.
@@ -176,7 +182,7 @@
                 $modal.style.display = 'none';
             }
 
-        } else { // 삭제 버튼을 제외한 부분은 글 상세조회 요청이다.
+        } else { // 삭제 버튼을 제외한 부분은 글 상세조회
 
             // section태그에 붙은 글 번호를 읽어오자
             // 이벤트가 발생한 타겟에서 가장 가까운 section.card를 지목해서 data-bno를 얻어오기.
@@ -185,10 +191,10 @@
 
             // 서버에 요청 보내기
             location.href='/board/detail/' + bno;
-
         }
 
-        
+
+
     });
 
 
@@ -238,6 +244,30 @@
   document.querySelector('.add-btn').onclick = e => {
     window.location.href = '/board/write';
   };
+
+  // 사용자가 현재 머물고 있는 페이지 버튼에 active 스타일 부여
+  function appendPageActive() {
+
+    // 현재 서버에서 넘겨준 페이지 번호
+    const currPage = '${maker.page.pageNo}';
+
+    // li 태그들을 전부 확인해서
+    // 현재 페이지 번호와 일치하는 li를 찾은 후 active 클래스 이름 붙이기
+    const $ul = document.querySelector('.pagination');
+    const $liList = [...$ul.children];
+
+    $liList.forEach($li => {
+        if (currPage === $li.dataset.pageNum) {
+            $li.classList.add('active');
+        }
+    });
+  }
+
+  appendPageActive();
+
+
+
+
 
 
 </script>
