@@ -1,8 +1,6 @@
 package com.spring.mvc.chap05.mapper;
 
-import com.spring.mvc.chap05.entity.Board;
 import com.spring.mvc.chap05.entity.Reply;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ class ReplyMapperTest {
     @Autowired
     ReplyMapper replyMapper;
 
-/*
+    /*
     @Test
     @DisplayName("게시물을 100개 등록하고, 랜덤으로 1000개의 댓글을 게시글에 등록한다.")
     void bulkInsertTest() {
@@ -53,10 +51,10 @@ class ReplyMapperTest {
         // given
         int boardNo = 77;
         // when
-        List<Reply> replyList = replyMapper.findAll(boardNo);
+        List<Reply> replyList = replyMapper.findAll(boardNo, page);
 
         // then
-        assertEquals(10, replyList.size());
+        assertEquals(9, replyList.size());
     }
 
     @Test
