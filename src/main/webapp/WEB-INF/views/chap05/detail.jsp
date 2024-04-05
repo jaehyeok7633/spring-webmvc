@@ -174,6 +174,11 @@
             <div class="card">
                 <div class="card-body">
 
+                    <c:if test="${login == null}">
+                        <a href="/members/sign-in">댓글은 로그인 후에 작성할 수 있습니다!</a>
+                    </c:if>
+
+                    <c:if test="${login != null}">
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="form-group">
@@ -196,14 +201,14 @@
                                     <label for="newReplyWriter" hidden>댓글 작성자</label>
                                     <input id="newReplyWriter" name="replyWriter" type="text"
                                            class="form-control" placeholder="작성자 이름"
-                                           style="margin-bottom: 6px;">
+                                           style="margin-bottom: 6px;" value="${login.name}" readonly>
                                     <button id="replyAddBtn" type="button"
                                             class="btn btn-dark form-control">등록
                                     </button>
                                 </div>
                             </div>
                         </div>
-
+                    </c:if>
                 </div>
             </div> <!-- end reply write -->
 
@@ -274,6 +279,10 @@
 
         const URL = '/api/v1/replies'; // 댓글과 관련된 요청 url을 전역변수화.
         const bno = '${b.boardNo}'; // 게시글 번호를 전역변수화.
+        const currentAccount = '${login.account}'; // 로그인한 사람 계정
+        const auth = '${login.auth}'; // 로그인한 사람 권한
+
+        console.log('auth: ', auth);
 
         // 화면에 페이지 버튼들을 렌더링하는 함수
         // 매개변수 선언부에 처음부터 디스트럭처링 해서 받을 수 있다.
@@ -321,7 +330,7 @@
 
                 for (let reply of replies) {
                     // 객체 디스트럭처링
-                    const {rno, writer, text, regDate, updateDate} = reply;
+                    const {rno, writer, text, regDate, updateDate, account} = reply;
 
                     tag += `
                     <div id='replyContent' class='card-body' data-replyId='\${rno}'>
@@ -338,10 +347,12 @@
                             <div class='col-md-3 text-right'>
                         `;
 
-                    tag += `
-                        <a id='replyModBtn' class='btn btn-sm btn-outline-dark' data-bs-toggle='modal' data-bs-target='#replyModifyModal'>수정</a>&nbsp;
-                        <a id='replyDelBtn' class='btn btn-sm btn-outline-dark' href='#'>삭제</a>
-                    `;
+                    if (auth === '관리자회원' || currentAccount === account) {
+                        tag += `
+                            <a id='replyModBtn' class='btn btn-sm btn-outline-dark' data-bs-toggle='modal' data-bs-target='#replyModifyModal'>수정</a>&nbsp;
+                            <a id='replyDelBtn' class='btn btn-sm btn-outline-dark' href='#'>삭제</a>
+                        `;
+                    }
 
                     tag += `   </div>
                             </div>
@@ -396,9 +407,8 @@
 
                 e.preventDefault(); // a태그의 링크이동 기능 중단
 
-                // href에 작성된 페이지 번호를 가져와서 댓글 목록을 비동기 요청
+                // href에 작성된 페이지 번호를 가져와서 댓글 목록을 비동기 요청.
                 fetchGetReplies(e.target.getAttribute('href'));
-
             }
 
         }
@@ -408,7 +418,8 @@
         // 댓글 등록 부분
         const $addBtn = document.getElementById('replyAddBtn');
 
-        $addBtn.onclick = e => {
+        if ($addBtn) {
+            $addBtn.onclick = e => {
 
             const $replyText = document.getElementById('newReplyText'); // 댓글 내용
             const $replyWriter = document.getElementById('newReplyWriter'); // 댓글 작성자
@@ -464,13 +475,15 @@
                     console.log('응답 성공! ', data);
                     // 댓글 작성자 input과 댓글 내용 text를 지워주자.
                     $replyText.value = '';
-                    $replyWriter.value = '';
+                    // $replyWriter.value = '';
 
                     // 댓글 목록 비동기 요청이 들어가야 한다.
                     // 따로 함수로 빼 주겠습니다.
                     // (등록 이후 뿐만 아니라 게시글 상세보기에 처음 들어왔을 때도 호출되어야 하니까)
                     fetchGetReplies();
                 });
+
+        }
         }
 
         // 댓글 삭제 + 수정모드 진입 이벤트 핸들러 등록 및 처리함수
@@ -478,13 +491,13 @@
 
             // 댓글 목록 전체를 감싸고 있는 영역 취득
             const $replyData = document.getElementById('replyData');
-            
+
             $replyData.onclick = e => {
 
                 e.preventDefault(); // a태그의 링크이동 기능 중지
 
                 // 수정이든 삭제든 댓글번호가 필요하다.
-                // 이벤트기 발생된 곳(수정, 삭제버튼)에서 가장 가까운 #replyContent에 붙은 댓글번호 가져오기.
+                // 이벤트가 발생된 곳(수정, 삭제버튼)에서 가장 가까운 #replyContent에 붙은 댓글번호 가져오기.
                 const rno = e.target.closest('#replyContent').dataset.replyid;
 
                 if (e.target.matches('#replyDelBtn')) {
@@ -520,7 +533,7 @@
 
                     // 읽어온 댓글 내용을 모달 바디에 집어넣기
                     document.getElementById('modReplyText').value = replyText;
-                    
+
                     // 아까 읽어놓은 댓글번호도 모달 안에 있는 input hidden에 집어넣자
                     document.getElementById('modReplyId').value = rno;
 
@@ -530,10 +543,9 @@
 
             }
 
-
         }
 
-        // 모달 안에서 수정 버튼 클릭 시 이벤트 처리 함수
+        // 모달 안에서 수정 버튼 클릭시 이벤트 처리 함수
         function makeReplyModifyClickHandler() {
 
             const $modBtn = document.getElementById('replyModBtn');
@@ -541,9 +553,9 @@
             $modBtn.addEventListener('click', e => {
 
                 const payload = {
-                    rno: document.getElementById('modReplyId').value,
+                    rno: +document.getElementById('modReplyId').value,
                     text: document.getElementById('modReplyText').value
-                }
+                };
                 console.log(payload);
 
                 const requestInfo = {
@@ -571,11 +583,9 @@
                         console.log(data);
                         fetchGetReplies(); // 수정완료 후 1페이지 댓글 목록 요청이 들어가게끔 처리.
                     });
-
-
             });
-
         }
+
 
 
 
@@ -591,7 +601,7 @@
             // 페이지 번호 클릭 이벤트 핸들러
             makePageButtonClickHandler();
 
-            // 댓글 삭제 & 수정 버튼 클릭 시 발생하는 이벤트 핸들러
+            // 댓글 삭제 & 수정 버튼 클릭시 발생하는 이벤트 핸들러
             makeReplyRemoveClickHandler();
 
             // 댓글 수정 클릭 이벤트 핸들러
