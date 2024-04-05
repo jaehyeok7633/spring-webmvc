@@ -28,7 +28,7 @@ class MemberServiceTest {
                 .build();
 
         // when
-        memberService.join(dto);
+        memberService.join(dto, savePath);
 
         // then
     }
@@ -43,13 +43,32 @@ class MemberServiceTest {
                 .build();
 
         // when
-        LoginResult result = memberService.authenticate(dto);
+        LoginResult result = memberService.authenticate(dto, request.getSession(), response);
 
         // then
         assertEquals(SUCCESS, result);
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
