@@ -47,12 +47,17 @@ public class SnsLoginController {
 
         snsLoginService.kakaoLogin(params);
 
-        return null;
+        return "";
     }
 
 
 
 }
+
+
+
+
+
 
 
 
