@@ -19,6 +19,14 @@
 </head>
 <body>
 
+    <c:if test="${login != null}">
+        <script>
+            alert('이미 로그인 했는데 왜와?');
+            location.href="/board/list";
+        </script>
+    </c:if>
+
+
     <%@ include file="../include/header.jsp" %>
 
     <div class="container wrap">
@@ -95,7 +103,7 @@
                                     <td style="width: 100%; text-align: center; colspan: 2; margin-top: 24px; padding-top: 12px; border-top: 1px solid #ececec">
 
                                         <a id="custom-login-btn"
-                                           href="https://kauth.kakao.com/oauth/authorize?client_id=${kakaoAppKey}&redirect_uri=http://gondue.co.kr${kakaoRedirect}&response_type=code">
+                                           href="/kakao/login">
                                             <img src="//mud-kage.kakao.com/14/dn/btqbjxsO6vP/KPiGpdnsubSq3a0PHEGUK1/o.jpg"
                                                  width="300"/>
                                         </a>
